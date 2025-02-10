@@ -17,6 +17,9 @@ export class DBService {
     this.logger.log('getClients')
     return this.clientsRepository.find({
       select: ['id'],
+      order: {
+        id: 'ASC',
+      },
     })
   }
 

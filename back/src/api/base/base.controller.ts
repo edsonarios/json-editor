@@ -23,7 +23,8 @@ export class BaseController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBaseDto: UpdateBaseDto) {
-    this.logger.log('update')
+    this.logger.log('update', id)
+    // console.log('updateBaseDto', updateBaseDto)
     return this.baseService.update(id, updateBaseDto)
   }
 }

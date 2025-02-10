@@ -20,7 +20,7 @@ export class BaseService {
   }
 
   update(id: string, config: object) {
-    this.logger.log('update')
+    this.logger.log('update', id)
     return this.dbService.saveClientConfig(id, config)
   }
 
