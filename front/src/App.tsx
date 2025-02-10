@@ -3,11 +3,22 @@ import { useEffect, useState } from 'react'
 import { DateTime } from 'luxon'
 import IconArrowLink from './components/ArrowLink'
 import Editor, { useMonaco } from '@monaco-editor/react'
+import { API_URL } from './utils/utils'
 
 export default function App() {
   const [jsonData, setJsonData] = useState('{}')
   const [editorInstance, setEditorInstance] = useState(null)
   const monaco = useMonaco()
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      const response = await fetch(`${API_URL}/base`)
+      const data = await response.json()
+      console.log(data)
+    }
+    fetchClients()
+    // setJsonData(JSON.stringify(data, null, 2))
+  }, [])
 
   const saveJson = () => {
     const data = JSON.parse(jsonData)

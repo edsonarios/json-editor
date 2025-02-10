@@ -1,9 +1,8 @@
-import { Logger, Module } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { BaseModule } from './api/base/base.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { ConfigModule } from '@nestjs/config'
 import { DbModule } from './api/db/db.module'
-const { STAGE } = process.env
 
 @Module({
   imports: [
@@ -12,24 +11,20 @@ const { STAGE } = process.env
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => {
-        const credentialsBase = {
-          host: process.env.DB_HOST,
-          port: process.env.DB_PORT ? +process.env.DB_PORT : 5432,
-          username: process.env.DB_USER,
-          password: process.env.DB_PASSWORD,
-          database: process.env.DB_NAME,
+        const localCredentials = {
+          host: process.env.LOCAL_HOST,
+          port: process.env.LOCAL_PORT ? +process.env.LOCAL_PORT : 5432,
+          username: process.env.LOCAL_USER,
+          password: process.env.LOCAL_PASSWORD,
+          database: process.env.LOCAL_NAME,
         }
-        if (STAGE !== 'prod') {
-          Logger.verbose('Connecting Base DB by', credentialsBase)
-        }
-
         return {
           type: 'postgres',
-          host: credentialsBase.host,
-          port: credentialsBase.port,
-          username: credentialsBase.username,
-          password: credentialsBase.password,
-          database: credentialsBase.database,
+          host: localCredentials.host,
+          port: localCredentials.port,
+          username: localCredentials.username,
+          password: localCredentials.password,
+          database: localCredentials.database,
           autoLoadEntities: true,
           synchronize: false,
           logging: false,
