@@ -15,4 +15,15 @@ export class DBService {
       select: ['id'],
     })
   }
+
+  async getClientConfig(id: string) {
+    return this.clientsRepository.findOne({
+      select: ['config'],
+      where: { id },
+    })
+  }
+
+  async saveClientConfig(id: string, config: object) {
+    return this.clientsRepository.update({ id }, { config: config })
+  }
 }

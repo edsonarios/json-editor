@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { UpdateBaseDto } from './dto/update-base.dto'
 import { DBService } from '../db/db.service'
 
 @Injectable()
@@ -11,12 +10,12 @@ export class BaseService {
     return clients.map((client) => client.id)
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} base`
+  findClientConfig(id: string) {
+    return this.dbService.getClientConfig(id)
   }
 
-  update(id: number, updateBaseDto: UpdateBaseDto) {
-    return `This action updates a #${id} base`
+  update(id: string, config: object) {
+    return this.dbService.saveClientConfig(id, config)
   }
 
   remove(id: number) {
