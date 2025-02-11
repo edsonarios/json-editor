@@ -9,38 +9,60 @@ import IconReload from './components/reload'
 import IconPlug from './components/plug'
 import debounce from 'lodash.debounce'
 import { toast, Toaster } from 'sonner'
+import { Select } from './components/select'
+// import { newtonsCradle } from 'ldrs'
 
+// newtonsCradle.register()
 export default function App() {
   const { clients, setClients } = useRepositoryStore<IJsonEditor>(
     (state) => state,
   )
+  useEffect(() => {
+    async function getLoader() {
+      const { ring } = await import('ldrs')
+      ring.register()
+    }
+    getLoader()
+  }, [])
 
   const [editorInstance, setEditorInstance] = useState<any>(null)
   //? DB Environments
   const [dbEnvs] = useState(DB_ENVS)
   const [selectedEnv, setSelectedEnv] = useState(dbEnvs[0])
   const [isGetClients, setIsGetClients] = useState('')
+  const [loadingEnv, setLoadingEnv] = useState(false)
   //? Clients
   const [selectedClient, setSelectedClient] = useState('')
   const [jsonData, setJsonData] = useState('{}')
   const [jsonFromDB, setJsonFromDB] = useState('{}')
   const [isSaveDisabled, setIsSaveDisabled] = useState(true)
+  const options = clients.map((client) => ({
+    value: client,
+    label: client,
+  }))
+  const [loadingConfig, setLoadingConfig] = useState(false)
   // const monaco = useMonaco()
 
   const fetchClients = async () => {
+    setLoadingEnv(true)
     setJsonData('{}')
     setClients([])
+    setSelectedClient('')
     const response = await fetch(`${API_URL}/base/${selectedEnv}`)
     const data = await response.json()
     setClients(data)
     setIsGetClients(selectedEnv)
+    setLoadingEnv(false)
   }
 
   const fetchClientConfig = async () => {
+    setLoadingConfig(true)
     setJsonData('{}')
-    if (!selectedClient) {
-      setSelectedClient(clients[0])
+    if (!selectedClient || selectedClient === '') {
+      setLoadingConfig(false)
+      return
     }
+
     const response = await fetch(
       `${API_URL}/base/${selectedEnv}/${selectedClient}`,
     )
@@ -48,6 +70,7 @@ export default function App() {
     const jsonData = JSON.stringify(data.config, null, 2)
     setJsonData(jsonData)
     setJsonFromDB(jsonData)
+    setLoadingConfig(false)
   }
 
   useEffect(() => {
@@ -87,7 +110,7 @@ export default function App() {
       style: {
         backgroundColor: 'var(--color-red-400)',
         color: 'var(--text-white)',
-        width: '180px',
+        width: '200px',
       },
     })
   }
@@ -154,10 +177,19 @@ export default function App() {
             >
               <IconPlug />
             </button>
+            {loadingEnv && (
+              <l-ring
+                size="30"
+                stroke="5"
+                bg-opacity="0"
+                speed="2"
+                color="white"
+              ></l-ring>
+            )}
           </div>
           <label className="">Clients</label>
           <div className="flex flex-row items-center space-x-2">
-            <select
+            {/* <select
               className="p-2  bg-zinc-700 rounded-md"
               name="clients"
               id="clients"
@@ -169,13 +201,27 @@ export default function App() {
                   {client}
                 </option>
               ))}
-            </select>
+            </select> */}
+            <Select
+              options={options}
+              setValue={setSelectedClient}
+              value={selectedClient}
+            />
             <button
               className="p-2 bg-green-600 rounded-md hover:bg-green-500"
               onClick={() => fetchClientConfig()}
             >
               <IconReload />
             </button>
+            {loadingConfig && (
+              <l-ring
+                size="30"
+                stroke="5"
+                bg-opacity="0"
+                speed="2"
+                color="white"
+              ></l-ring>
+            )}
           </div>
           {/*//? {Footer} */}
           <footer className="absolute flex flex-col items-start bottom-6">
