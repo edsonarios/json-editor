@@ -13,7 +13,7 @@ export const areJsonEqual = (json1: string, json2: string) => {
     const normalizedJson2 = JSON.stringify(obj2, null, 2)
     return normalizedJson1 === normalizedJson2
   } catch (error) {
-    console.error('Not valid json', error)
+    // console.error('Not valid json', error)
     return false
   }
 }

@@ -8,6 +8,7 @@ import { IJsonEditor, useRepositoryStore } from './store/repositoryStore'
 import IconReload from './components/reload'
 import IconPlug from './components/plug'
 import debounce from 'lodash.debounce'
+import { toast, Toaster } from 'sonner'
 
 export default function App() {
   const { clients, setClients } = useRepositoryStore<IJsonEditor>(
@@ -59,12 +60,35 @@ export default function App() {
   }, [jsonData, jsonFromDB])
 
   const saveJson = async () => {
-    await fetch(`${API_URL}/base/${selectedEnv}/${selectedClient}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
+    const saved = await fetch(
+      `${API_URL}/base/${selectedEnv}/${selectedClient}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonData,
       },
-      body: jsonData,
+    )
+    const data = await saved.json()
+    if (saved.ok) {
+      setJsonFromDB(jsonData)
+      setIsSaveDisabled(true)
+      toast.success(data.message, {
+        style: {
+          backgroundColor: 'var(--color-green-600)',
+          color: 'var(--text-white)',
+          width: '110px',
+        },
+      })
+      return
+    }
+    toast.error(data.message, {
+      style: {
+        backgroundColor: 'var(--color-red-400)',
+        color: 'var(--text-white)',
+        width: '180px',
+      },
     })
   }
 
@@ -222,6 +246,7 @@ export default function App() {
           </div>
         </section>
       </div>
+      <Toaster />
     </div>
   )
 }

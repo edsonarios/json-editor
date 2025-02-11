@@ -2,6 +2,7 @@ import { Clients } from './entities/client.entity'
 import { DataSource, Repository } from 'typeorm'
 import { VercelLogger } from 'src/common/nestConfig/logger'
 import { createDataSource } from './db.config'
+import { BadRequestException } from '@nestjs/common'
 
 export class DBService {
   private readonly logger = new VercelLogger(DBService.name)
@@ -45,6 +46,10 @@ export class DBService {
 
   async saveClientConfig(id: string, config: object) {
     this.logger.log('saveClientConfig', id)
-    return await this.clientsRepository.update({ id }, { config: config })
+    const data = await this.clientsRepository.update({ id }, { config: config })
+    if (data.affected === 0) {
+      throw new BadRequestException('Error saving config')
+    }
+    return { message: 'Saved' }
   }
 }

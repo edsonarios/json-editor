@@ -40,13 +40,12 @@ export class BaseService {
 
   async update(dbEnv: string, id: string, config: object) {
     this.logger.log('update', dbEnv, id)
-
     this.dbService = new DBService(dbEnv)
     await this.dbService.init()
 
-    await this.dbService.saveClientConfig(id, config)
+    const data = await this.dbService.saveClientConfig(id, config)
 
     await this.dbService.destroy()
-    return { message: 'success' }
+    return data
   }
 }
