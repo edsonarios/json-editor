@@ -271,7 +271,7 @@ export default function App() {
           </div>
           <div className="mt-2 w-full">
             <Editor
-              height="75vh"
+              height="80vh"
               width="100%"
               language="json"
               theme="vs-dark"
@@ -281,7 +281,6 @@ export default function App() {
                 debouncedJsonData(value)
               }}
               options={{
-                minimap: { enabled: false },
                 automaticLayout: true,
                 fontFamily: 'Fira Code, monospace',
                 fontSize: 14,
