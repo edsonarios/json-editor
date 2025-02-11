@@ -1,17 +1,29 @@
-import { Injectable } from '@nestjs/common'
 import { Clients } from './entities/client.entity'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { DataSource, Repository } from 'typeorm'
 import { VercelLogger } from 'src/common/nestConfig/logger'
+import { createDataSource } from './db.config'
 
-@Injectable()
 export class DBService {
   private readonly logger = new VercelLogger(DBService.name)
+  private readonly clientDataSource: DataSource
+  private readonly clientsRepository: Repository<Clients>
 
-  constructor(
-    @InjectRepository(Clients)
-    private readonly clientsRepository: Repository<Clients>,
-  ) {}
+  constructor(dbEnv: string) {
+    this.clientDataSource = createDataSource(dbEnv)
+    this.clientsRepository = this.clientDataSource.getRepository(Clients)
+  }
+
+  async init() {
+    if (!this.clientDataSource.isInitialized) {
+      await this.clientDataSource.initialize()
+    }
+  }
+
+  async destroy() {
+    if (this.clientDataSource.isInitialized) {
+      await this.clientDataSource.destroy()
+    }
+  }
 
   async getClients() {
     this.logger.log('getClients')
@@ -24,7 +36,7 @@ export class DBService {
   }
 
   async getClientConfig(id: string) {
-    this.logger.log('getClientConfig')
+    this.logger.log('getClientConfig', id)
     return this.clientsRepository.findOne({
       select: ['config'],
       where: { id },
@@ -32,7 +44,7 @@ export class DBService {
   }
 
   async saveClientConfig(id: string, config: object) {
-    this.logger.log('saveClientConfig')
-    return this.clientsRepository.update({ id }, { config: config })
+    this.logger.log('saveClientConfig', id)
+    return await this.clientsRepository.update({ id }, { config: config })
   }
 }

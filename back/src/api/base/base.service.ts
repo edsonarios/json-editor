@@ -5,26 +5,48 @@ import { VercelLogger } from 'src/common/nestConfig/logger'
 @Injectable()
 export class BaseService {
   private readonly logger = new VercelLogger(BaseService.name)
+  private dbService: DBService
 
-  constructor(private readonly dbService: DBService) {}
+  constructor() {}
 
-  async getClients() {
-    this.logger.log('getClients')
+  initDB(dbEnv: string) {
+    this.logger.log('initDB', dbEnv)
+    this.dbService = new DBService(dbEnv)
+  }
+
+  async getClients(dbEnv: string) {
+    this.logger.log('getClients', dbEnv)
+
+    this.dbService = new DBService(dbEnv)
+    await this.dbService.init()
+
     const clients = await this.dbService.getClients()
+
+    await this.dbService.destroy()
     return clients.map((client) => client.id)
   }
 
-  findClientConfig(id: string) {
-    this.logger.log('findClientConfig')
-    return this.dbService.getClientConfig(id)
+  async findClientConfig(dbEnv: string, id: string) {
+    this.logger.log('findClientConfig', dbEnv, id)
+
+    this.dbService = new DBService(dbEnv)
+    await this.dbService.init()
+
+    const config = await this.dbService.getClientConfig(id)
+
+    await this.dbService.destroy()
+    return config
   }
 
-  update(id: string, config: object) {
-    this.logger.log('update', id)
-    return this.dbService.saveClientConfig(id, config)
-  }
+  async update(dbEnv: string, id: string, config: object) {
+    this.logger.log('update', dbEnv, id)
 
-  remove(id: number) {
-    return `This action removes a #${id} base`
+    this.dbService = new DBService(dbEnv)
+    await this.dbService.init()
+
+    await this.dbService.saveClientConfig(id, config)
+
+    await this.dbService.destroy()
+    return { message: 'success' }
   }
 }

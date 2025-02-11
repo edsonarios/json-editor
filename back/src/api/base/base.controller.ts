@@ -9,22 +9,25 @@ export class BaseController {
 
   constructor(private readonly baseService: BaseService) {}
 
-  @Get()
-  getClients() {
-    this.logger.log('getClients')
-    return this.baseService.getClients()
+  @Get(':dbEnv')
+  getClients(@Param('dbEnv') dbEnv: string) {
+    this.logger.log('getClients', dbEnv)
+    return this.baseService.getClients(dbEnv)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    this.logger.log('findOne')
-    return this.baseService.findClientConfig(id)
+  @Get(':dbEnv/:id')
+  findClientConfig(@Param('dbEnv') dbEnv: string, @Param('id') id: string) {
+    this.logger.log('findClientConfig', dbEnv, id)
+    return this.baseService.findClientConfig(dbEnv, id)
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBaseDto: UpdateBaseDto) {
-    this.logger.log('update', id)
-    // console.log('updateBaseDto', updateBaseDto)
-    return this.baseService.update(id, updateBaseDto)
+  @Patch(':dbEnv/:id')
+  update(
+    @Param('dbEnv') dbEnv: string,
+    @Param('id') id: string,
+    @Body() updateBaseDto: UpdateBaseDto,
+  ) {
+    this.logger.log('update', dbEnv, id)
+    return this.baseService.update(dbEnv, id, updateBaseDto)
   }
 }
