@@ -1,5 +1,5 @@
 import './App.css'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import IconArrowLink from './components/ArrowLink'
 import Editor from '@monaco-editor/react'
 // import Editor, { useMonaco } from '@monaco-editor/react'
@@ -7,6 +7,7 @@ import { API_URL, areJsonEqual, DB_ENVS } from './utils/utils'
 import { IJsonEditor, useRepositoryStore } from './store/repositoryStore'
 import IconReload from './components/reload'
 import IconPlug from './components/plug'
+import debounce from 'lodash.debounce'
 
 export default function App() {
   const { clients, setClients } = useRepositoryStore<IJsonEditor>(
@@ -52,6 +53,7 @@ export default function App() {
     fetchClientConfig()
   }, [selectedClient])
 
+  const debouncedJsonData = useCallback(debounce(setJsonData, 300), [])
   useEffect(() => {
     setIsSaveDisabled(areJsonEqual(jsonData, jsonFromDB))
   }, [jsonData, jsonFromDB])
@@ -152,7 +154,7 @@ export default function App() {
             </button>
           </div>
           {/*//? {Footer} */}
-          <footer className="absolute flex flex-col items-start bottom-2">
+          <footer className="absolute flex flex-col items-start bottom-6">
             <p className="">Made By ⚡ Edson</p>
             <a
               className="text-gray-400 flex items-center group hover:text-gray-100 hover:transition-all ml-7"
@@ -206,7 +208,7 @@ export default function App() {
               value={jsonData}
               onChange={(value) => {
                 if (!value) return
-                setJsonData(value)
+                debouncedJsonData(value)
               }}
               options={{
                 minimap: { enabled: false },
