@@ -28,7 +28,8 @@ export default function App() {
     label: client,
   }))
   const [loadingConfig, setLoadingConfig] = useState(false)
-  // const monaco = useMonaco()
+  //? Save Json
+  const [isSaving, setIsSaving] = useState(false)
 
   const fetchClients = async () => {
     setLoadingEnv(true)
@@ -70,6 +71,7 @@ export default function App() {
   }, [jsonData, jsonFromDB])
 
   const saveJson = async () => {
+    setIsSaving(true)
     const saved = await fetch(
       `${API_URL}/base/${selectedEnv}/${selectedClient}`,
       {
@@ -91,6 +93,7 @@ export default function App() {
           width: '110px',
         },
       })
+      setIsSaving(false)
       return
     }
     toast.error(data.message, {
@@ -100,6 +103,7 @@ export default function App() {
         width: '200px',
       },
     })
+    setIsSaving(false)
   }
 
   const formatJson = () => {
@@ -202,6 +206,7 @@ export default function App() {
               </button>
             </div>
             <div className="flex flex-row space-x-4">
+              {isSaving && <Loader />}
               <button
                 className={`px-5 bg-orange-600 rounded-md hover:bg-orange-500 ${isSaveDisabled ? 'cursor-not-allowed bg-zinc-500 hover:bg-zinc-400' : ''}`}
                 onClick={saveJson}
