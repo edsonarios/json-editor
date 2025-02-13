@@ -2,29 +2,15 @@ import './App.css'
 import { useCallback, useEffect, useState } from 'react'
 import IconArrowLink from './components/ArrowLink'
 import Editor from '@monaco-editor/react'
-// import Editor, { useMonaco } from '@monaco-editor/react'
 import { API_URL, areJsonEqual, DB_ENVS } from './utils/utils'
-import { IJsonEditor, useRepositoryStore } from './store/repositoryStore'
 import IconReload from './components/reload'
 import IconPlug from './components/plug'
 import debounce from 'lodash.debounce'
 import { toast, Toaster } from 'sonner'
 import { Select } from './components/select'
-// import { newtonsCradle } from 'ldrs'
+import Loader from './components/loader'
 
-// newtonsCradle.register()
 export default function App() {
-  const { clients, setClients } = useRepositoryStore<IJsonEditor>(
-    (state) => state,
-  )
-  useEffect(() => {
-    async function getLoader() {
-      const { ring } = await import('ldrs')
-      ring.register()
-    }
-    getLoader()
-  }, [])
-
   const [editorInstance, setEditorInstance] = useState<any>(null)
   //? DB Environments
   const [dbEnvs] = useState(DB_ENVS)
@@ -32,6 +18,7 @@ export default function App() {
   const [isGetClients, setIsGetClients] = useState('')
   const [loadingEnv, setLoadingEnv] = useState(false)
   //? Clients
+  const [clients, setClients] = useState<string[]>([])
   const [selectedClient, setSelectedClient] = useState('')
   const [jsonData, setJsonData] = useState('{}')
   const [jsonFromDB, setJsonFromDB] = useState('{}')
@@ -133,22 +120,6 @@ export default function App() {
     }
   }
 
-  // useEffect(() => {
-  //   if (monaco && editorInstance) {
-  //     monaco.editor.addCommand(
-  //       monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD,
-  //       () => {
-  //         editorInstance.trigger(
-  //           'keyboard',
-  //           'editor.action.addSelectionToNextFindMatch',
-  //           null,
-  //         )
-  //       },
-  //       'editorFocus',
-  //     )
-  //   }
-  // }, [monaco, editorInstance])
-
   return (
     <div className="flex items-center flex-col h-100vh">
       <h1 className="text-6xl mb-4">Json Editor</h1>
@@ -177,31 +148,10 @@ export default function App() {
             >
               <IconPlug />
             </button>
-            {loadingEnv && (
-              <l-ring
-                size="30"
-                stroke="5"
-                bg-opacity="0"
-                speed="2"
-                color="white"
-              ></l-ring>
-            )}
+            {loadingEnv && <Loader />}
           </div>
           <label className="">Clients</label>
           <div className="flex flex-row items-center space-x-2">
-            {/* <select
-              className="p-2  bg-zinc-700 rounded-md"
-              name="clients"
-              id="clients"
-              onChange={(e) => setSelectedClient(e.target.value)}
-              value={selectedClient}
-            >
-              {clients.map((client) => (
-                <option key={client} value={client}>
-                  {client}
-                </option>
-              ))}
-            </select> */}
             <Select
               options={options}
               setValue={setSelectedClient}
@@ -213,15 +163,7 @@ export default function App() {
             >
               <IconReload />
             </button>
-            {loadingConfig && (
-              <l-ring
-                size="30"
-                stroke="5"
-                bg-opacity="0"
-                speed="2"
-                color="white"
-              ></l-ring>
-            )}
+            {loadingConfig && <Loader />}
           </div>
           {/*//? {Footer} */}
           <footer className="absolute flex flex-col items-start bottom-6">
@@ -261,7 +203,7 @@ export default function App() {
             </div>
             <div className="flex flex-row space-x-4">
               <button
-                className={`p-2 bg-orange-600 rounded-md hover:bg-orange-500 ${isSaveDisabled ? 'cursor-not-allowed bg-zinc-500 hover:bg-zinc-400' : ''}`}
+                className={`px-5 bg-orange-600 rounded-md hover:bg-orange-500 ${isSaveDisabled ? 'cursor-not-allowed bg-zinc-500 hover:bg-zinc-400' : ''}`}
                 onClick={saveJson}
                 disabled={isSaveDisabled}
               >
