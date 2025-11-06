@@ -224,3 +224,6 @@
   }
 }
 
+.headerButton{
+  @apply text-base w-full rounded-md py-1 font-medium text-gray-700;
+}

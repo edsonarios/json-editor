@@ -1,6 +1,5 @@
 import './App.css'
 import { useCallback, useEffect, useState } from 'react'
-import IconArrowLink from './components/ArrowLink'
 import Editor from '@monaco-editor/react'
 import { API_URL, areJsonEqual, DB_ENVS } from './utils/utils'
 import IconReload from './components/reload'
@@ -9,6 +8,9 @@ import debounce from 'lodash.debounce'
 import { toast, Toaster } from 'sonner'
 import { Select } from './components/select'
 import Loader from './components/loader'
+import Footer from './components/footer'
+import { TabHeader } from './components/tabHeader'
+import { tablesAtributes } from './utils/clientTables'
 
 export default function App() {
   const [editorInstance, setEditorInstance] = useState<any>(null)
@@ -28,8 +30,34 @@ export default function App() {
     label: client,
   }))
   const [loadingConfig, setLoadingConfig] = useState(false)
+  const [loadingDatas, setLoadingDatas] = useState(false)
   //? Save Json
   const [isSaving, setIsSaving] = useState(false)
+
+  //? clients tables datas
+  const [table, setTable] = useState<string[]>([])
+  const [selectedTable, setSelectedTable] =
+    useState<keyof typeof tablesAtributes>('empty')
+  const optionsTable = table.map((table) => ({
+    value: table,
+    label: table,
+  }))
+  const [tableDataOriginal, setTableDataOriginal] = useState<any[]>([])
+  const [tableData, setTableData] = useState<any[]>([])
+  const [selectedTableData, setSelectedTableData] = useState('')
+  const optionsTableData = tableData.map((tableData) => ({
+    value: tableData.value,
+    label: tableData.label,
+  }))
+  const [tableDataAttribute, setTableDataAttribute] = useState<string[]>([])
+  const [selectedTableDataAttribute, setSelectedTableDataAttribute] =
+    useState('')
+  const optionsTableDataAttribute = tableDataAttribute.map(
+    (tableDataAttribute) => ({
+      value: tableDataAttribute,
+      label: tableDataAttribute,
+    }),
+  )
 
   const fetchClients = async () => {
     setLoadingEnv(true)
@@ -44,6 +72,11 @@ export default function App() {
   }
 
   const fetchClientConfig = async () => {
+    if (selectTab !== 0) {
+      const keysTable = Object.keys(tablesAtributes)
+      setTable(keysTable)
+      return
+    }
     setLoadingConfig(true)
     setJsonData('{}')
     if (!selectedClient || selectedClient === '') {
@@ -72,16 +105,40 @@ export default function App() {
 
   const saveJson = async () => {
     setIsSaving(true)
-    const saved = await fetch(
-      `${API_URL}/base/${selectedEnv}/${selectedClient}`,
-      {
+    console.log('selectTab', selectTab)
+    let saved
+    if (selectTab === 0) {
+      saved = await fetch(`${API_URL}/base/${selectedEnv}/${selectedClient}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: jsonData,
-      },
-    )
+      })
+    }
+    if (selectTab === 1) {
+      saved = await fetch(
+        `${API_URL}/clients/${selectedEnv}/${selectedClient}/${selectedTable}/${selectedTableDataAttribute}/${selectedTableData}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonData,
+        },
+      )
+    }
+    if (!saved) {
+      toast.error('Internal error', {
+        style: {
+          backgroundColor: 'var(--color-red-400)',
+          color: 'var(--text-white)',
+          width: '200px',
+        },
+      })
+      setIsSaving(false)
+      return
+    }
     const data = await saved.json()
     if (saved.ok) {
       setJsonFromDB(jsonData)
@@ -124,6 +181,78 @@ export default function App() {
     }
   }
 
+  const [selectTab, setSelectTab] = useState(0)
+  useEffect(() => {}, [selectedTable])
+
+  const fetchTableDatas = async () => {
+    if (selectedClient === '') return
+    setLoadingDatas(true)
+    // setLoadingEnv(true)
+    // setJsonData('{}')
+    // setClients([])
+    // setSelectedClient('')
+    const response = await fetch(
+      `${API_URL}/clients/${selectedEnv}/${selectedClient}/${selectedTable}/`,
+    )
+    const data = (await response.json()) as any[]
+    console.log('data', data)
+    setTableDataOriginal(data)
+    if (selectedTable === 'dashboards' || selectedTable === 'suites') {
+      const nameTableDatas = data.map((data) => {
+        return { value: data.id, label: data.name }
+      })
+      setTableData(nameTableDatas)
+    }
+    const keysTableData = tablesAtributes[selectedTable]
+    setTableDataAttribute(keysTableData)
+    // setTableData(data)
+    // setIsGetClients(selectedEnv)
+    // setLoadingEnv(false)
+    setLoadingDatas(false)
+  }
+  useEffect(() => {
+    fetchTableDatas()
+  }, [selectedTable])
+
+  useEffect(() => {
+    if (selectedTableDataAttribute === '') return
+
+    const tableData = tableDataOriginal.find(
+      (data) => data.id === selectedTableData,
+    )
+    const jsonData = tableData[selectedTableDataAttribute] || {}
+    const jsonDataParsed = JSON.stringify(jsonData, null, 2)
+    setJsonData(jsonDataParsed)
+    setJsonFromDB(jsonDataParsed)
+  }, [selectedTableDataAttribute])
+
+  const fetchTableDatasToReload = async () => {
+    if (selectedClient === '') return
+    setLoadingConfig(true)
+    setJsonData('{}')
+    const response = await fetch(
+      `${API_URL}/clients/${selectedEnv}/${selectedClient}/${selectedTable}/`,
+    )
+    const data = (await response.json()) as any[]
+    console.log('data', data)
+    setTableDataOriginal(data)
+    if (selectedTable === 'dashboards' || selectedTable === 'suites') {
+      const nameTableDatas = data.map((data) => {
+        return { value: data.id, label: data.name }
+      })
+      setTableData(nameTableDatas)
+      const tableData = data.find((data) => data.id === selectedTableData)
+      const jsonData = tableData[selectedTableDataAttribute] || {}
+      const jsonDataParsed = JSON.stringify(jsonData, null, 2)
+      setJsonData(jsonDataParsed)
+      setJsonFromDB(jsonDataParsed)
+    }
+    setLoadingConfig(false)
+    // setTableData(data)
+    // setIsGetClients(selectedEnv)
+    // setLoadingEnv(false)
+  }
+
   return (
     <div className="flex items-center flex-col h-100vh">
       <h1 className="text-6xl mb-4">Json Editor</h1>
@@ -154,35 +283,91 @@ export default function App() {
             </button>
             {loadingEnv && <Loader />}
           </div>
-          <label className="">Clients</label>
-          <div className="flex flex-row items-center space-x-2">
-            <Select
-              options={options}
-              setValue={setSelectedClient}
-              value={selectedClient}
+          <div id="tabsId" className="flex flex-row min-w-[270px]">
+            <TabHeader
+              label="Base"
+              selectTab={0}
+              currentTab={selectTab}
+              setSelectTab={setSelectTab}
             />
-            <button
-              className="p-2 bg-green-600 rounded-md hover:bg-green-500"
-              onClick={() => fetchClientConfig()}
-            >
-              <IconReload />
-            </button>
-            {loadingConfig && <Loader />}
+            <TabHeader
+              label="Clients"
+              selectTab={1}
+              currentTab={selectTab}
+              setSelectTab={setSelectTab}
+            />
           </div>
+          {selectTab === 0 ? (
+            //? config bases
+            <div>
+              <label className="">Configs</label>
+              <div className="flex flex-row items-center space-x-2">
+                <Select
+                  options={options}
+                  setValue={setSelectedClient}
+                  value={selectedClient}
+                />
+                <button
+                  className="p-2 bg-green-600 rounded-md hover:bg-green-500"
+                  onClick={() => fetchClientConfig()}
+                >
+                  <IconReload />
+                </button>
+                {loadingConfig && <Loader />}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col space-y-2 items-start">
+              {/* //? Clients */}
+              <div>
+                <label className="mr-2">Clients</label>
+                <Select
+                  options={options}
+                  setValue={setSelectedClient}
+                  value={selectedClient}
+                />
+              </div>
+              {/* //? Tables */}
+              <div className="flex flex-row">
+                <label className="mr-2">Tables</label>
+                <Select
+                  options={optionsTable}
+                  setValue={setSelectedTable}
+                  value={selectedTable}
+                />
+                {loadingDatas && <Loader />}
+              </div>
+              {/* //? Tables Data */}
+              <div>
+                <label className="mr-2">Datas</label>
+                <Select
+                  options={optionsTableData}
+                  setValue={setSelectedTableData}
+                  value={selectedTableData}
+                />
+              </div>
+              {/* //? Attributes */}
+              <div className="flex flex-row items-center space-x-2">
+                <label className="mr-2">Attributes</label>
+                <Select
+                  options={optionsTableDataAttribute}
+                  setValue={setSelectedTableDataAttribute}
+                  value={selectedTableDataAttribute}
+                />
+                <button
+                  className="p-2 bg-green-600 rounded-md hover:bg-green-500"
+                  onClick={() => fetchTableDatasToReload()}
+                >
+                  <IconReload />
+                </button>
+                {loadingConfig && <Loader />}
+              </div>
+            </div>
+          )}
           {/*//? {Footer} */}
-          <footer className="absolute flex flex-col items-start bottom-6">
-            <p className="">Made By ⚡ Edson</p>
-            <a
-              className="text-gray-400 flex items-center group hover:text-gray-100 hover:transition-all ml-7"
-              href="https://www.linkedin.com/in/edson-a%C3%B1awaya/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Linkedin
-              <IconArrowLink />
-            </a>
-          </footer>
+          <Footer />
         </section>
+        {/*//? {Editor} */}
         <section className="w-2/3">
           <div className="flex flex-row w-full justify-between">
             <div className="flex flex-row space-x-4">

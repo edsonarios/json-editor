@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { BaseModule } from './api/base/base.module'
 import { ConfigModule } from '@nestjs/config'
+import { ClientModule } from './api/clients/client.module'
 
 @Module({
   imports: [
@@ -8,6 +9,7 @@ import { ConfigModule } from '@nestjs/config'
       isGlobal: true,
     }),
     BaseModule,
+    ClientModule,
   ],
   controllers: [],
   providers: [],

@@ -1,11 +1,11 @@
-import { Clients } from './entities/client.entity'
+import { Clients } from './entities/base/client.entity'
 import { DataSource, Repository } from 'typeorm'
 import { VercelLogger } from 'src/common/nestConfig/logger'
 import { createDataSource } from './db.config'
 import { BadRequestException } from '@nestjs/common'
 
-export class DBService {
-  private readonly logger = new VercelLogger(DBService.name)
+export class DBBaseService {
+  private readonly logger = new VercelLogger(DBBaseService.name)
   private readonly clientDataSource: DataSource
   private readonly clientsRepository: Repository<Clients>
 
