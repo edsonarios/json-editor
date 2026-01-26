@@ -38,7 +38,7 @@ export class DBBaseService {
 
   async getClientConfig(id: string) {
     this.logger.log('getClientConfig', id)
-    return this.clientsRepository.findOne({
+    return await this.clientsRepository.findOne({
       select: ['config'],
       where: { id },
     })
