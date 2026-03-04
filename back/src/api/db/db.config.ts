@@ -44,6 +44,7 @@ export const createDataSource = (dbEnv: string): DataSource => {
     port: credentials.port,
     entities: [Clients],
     synchronize: false,
+    ssl: { rejectUnauthorized: false },
   })
 }
 
@@ -88,5 +89,6 @@ export const createClientDataSource = (
     port: credentials.port,
     entities: [Dashboards, SurveyDeliveries, SurveyVersions, Suites],
     synchronize: false,
+    ssl: { rejectUnauthorized: false },
   })
 }
