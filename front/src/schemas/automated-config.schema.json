@@ -1,0 +1,1418 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/AutomatedConfig",
+  "definitions": {
+    "AutomatedConfig": {
+      "type": "object",
+      "properties": {
+        "activate": {
+          "type": "boolean"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AutomatedFileConfig"
+          }
+        },
+        "clientsToMoveFile": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "activate",
+        "files"
+      ],
+      "additionalProperties": false
+    },
+    "AutomatedFileConfig": {
+      "type": "object",
+      "properties": {
+        "activate": {
+          "type": "boolean"
+        },
+        "fileBase": {
+          "type": "string"
+        },
+        "surveyName": {
+          "type": "string"
+        },
+        "loadType": {
+          "$ref": "#/definitions/AutomatedLoadType"
+        },
+        "batchSize": {
+          "type": "number"
+        },
+        "country": {
+          "type": "string"
+        },
+        "fieldMapping": {
+          "$ref": "#/definitions/AutomatedFieldMapping"
+        },
+        "responseMapping": {
+          "$ref": "#/definitions/AutomatedFieldMapping"
+        },
+        "delivery": {
+          "$ref": "#/definitions/AutomatedDeliveryConfig"
+        },
+        "deliveryGroup": {
+          "$ref": "#/definitions/AutomatedDeliveryGroupConfig"
+        },
+        "keysSelector": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updateUsers": {
+          "$ref": "#/definitions/UpdateUsersConfig"
+        },
+        "quarantineConfig": {
+          "$ref": "#/definitions/QuarantineConfig"
+        },
+        "globalTransformConfig": {
+          "$ref": "#/definitions/GlobalTransformConfig"
+        },
+        "createTickets": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "createAnalytics": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "generateIndicators": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "profiling": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "limits": {
+          "$ref": "#/definitions/LimitsConfig"
+        },
+        "chargeOrUpdate": {
+          "$ref": "#/definitions/ChargeOrUpdateConfig"
+        },
+        "fileProcessedOptions": {
+          "$ref": "#/definitions/FileProcessedOptions"
+        },
+        "deleteCacheFiles": {
+          "type": "boolean"
+        },
+        "deleteRows": {
+          "$ref": "#/definitions/DeleteRowsConfig"
+        },
+        "deleteDuplicatesByPrioritization": {
+          "$ref": "#/definitions/DeleteDuplicatesByPrioritizationConfig"
+        },
+        "byMultipleFilterRows": {
+          "$ref": "#/definitions/ByMultipleFilterRowsConfig"
+        },
+        "multipleSurveys": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "preTasks": {
+          "$ref": "#/definitions/PreTasksConfig"
+        },
+        "addExtraFields": {
+          "$ref": "#/definitions/AddExtraFieldsConfig"
+        },
+        "specificSendType": {
+          "type": "string",
+          "enum": [
+            "WSSP",
+            "SMS",
+            "EMAIL",
+            "WSSPEMAIL",
+            "WSSPEMAILSMS",
+            "WSSPSMS",
+            "SMSEMAIL"
+          ]
+        }
+      },
+      "required": [
+        "activate",
+        "fileBase",
+        "surveyName",
+        "fieldMapping"
+      ],
+      "additionalProperties": false
+    },
+    "AutomatedLoadType": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "historical"
+      ]
+    },
+    "AutomatedFieldMapping": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/AutomatedFieldConfig"
+      }
+    },
+    "AutomatedFieldConfig": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "transforms": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TransformInstruction"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/TransformInstruction"
+              }
+            }
+          ]
+        },
+        "validations": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ValidationInstruction"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ValidationInstruction"
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "key"
+      ],
+      "additionalProperties": false
+    },
+    "TransformInstruction": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/SimpleTransformInstruction"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "$ref": "#/definitions/SimpleTransformInstruction"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "phone"
+            },
+            "country": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "date"
+            },
+            "from": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "locale": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "diaTexto"
+            },
+            "from": {
+              "type": "string"
+            },
+            "locale": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type",
+            "from"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "valueCondition"
+            },
+            "from": {
+              "$ref": "#/definitions/ConfigValue"
+            },
+            "to": {
+              "$ref": "#/definitions/JsonValue"
+            }
+          },
+          "required": [
+            "type",
+            "from",
+            "to"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "valueMap"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/JsonValue"
+              }
+            },
+            "trim": {
+              "type": "boolean"
+            },
+            "caseInsensitive": {
+              "type": "boolean"
+            },
+            "removeDiacritics": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "values"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "ifElse"
+            },
+            "equals": {
+              "$ref": "#/definitions/ConfigValue"
+            },
+            "then": {
+              "$ref": "#/definitions/JsonValue"
+            },
+            "else": {
+              "$ref": "#/definitions/JsonValue"
+            }
+          },
+          "required": [
+            "type",
+            "equals",
+            "then",
+            "else"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "SimpleTransformInstruction": {
+      "type": "string",
+      "enum": [
+        "phone",
+        "number",
+        "lowercase",
+        "uppercase",
+        "capitalize",
+        "trim",
+        "boolean",
+        "booleanFromSI",
+        "jsonParse",
+        "ignore"
+      ]
+    },
+    "ConfigValue": {
+      "type": [
+        "string",
+        "number",
+        "boolean",
+        "null"
+      ]
+    },
+    "JsonValue": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ConfigValue"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/JsonValue"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/JsonValue"
+          }
+        }
+      ]
+    },
+    "ValidationInstruction": {
+      "anyOf": [
+        {
+          "type": "string",
+          "const": "required"
+        },
+        {
+          "type": "string",
+          "const": "email"
+        },
+        {
+          "type": "string",
+          "const": "number"
+        },
+        {
+          "type": "string",
+          "const": "boolean"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "messageError": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "required",
+                "email",
+                "number",
+                "boolean"
+              ]
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "messageError": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "startsWith"
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "values"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "messageError": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "dateFormat"
+            },
+            "format": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "messageError": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "includeInValues"
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ConfigValue"
+              }
+            }
+          },
+          "required": [
+            "type",
+            "values"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "messageError": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "includeInValuesFromConfig"
+            },
+            "from": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "from",
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "messageError": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "includeInRelation"
+            },
+            "relation": {
+              "type": "string"
+            },
+            "values": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ConfigValue"
+                }
+              }
+            }
+          },
+          "required": [
+            "relation",
+            "type",
+            "values"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "messageError": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "diasValidosHaciaAtras"
+            },
+            "days": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        }
+      ]
+    },
+    "AutomatedDeliveryConfig": {
+      "type": "object",
+      "properties": {
+        "chargeType": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "SENDING",
+            "SENT",
+            "RESPONDED",
+            "CANCELED",
+            "ERROR",
+            "CUARENTINE"
+          ]
+        },
+        "finished": {
+          "type": "boolean"
+        },
+        "sucursal": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sendedDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "respondedDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "csatProfiling": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "PROMOTOR",
+            "DETRACTOR",
+            "NEUTRAL",
+            null
+          ]
+        },
+        "npsProfiling": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "PROMOTOR",
+            "DETRACTOR",
+            "NEUTRAL",
+            null
+          ]
+        },
+        "profilings": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sendType": {
+          "type": "string",
+          "enum": [
+            "WSSP",
+            "SMS",
+            "EMAIL"
+          ]
+        },
+        "wsspStatus": {
+          "$ref": "#/definitions/JsonValue"
+        },
+        "resent": {
+          "type": "boolean"
+        },
+        "textMining": {
+          "$ref": "#/definitions/JsonValue"
+        },
+        "fromDelivery": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "emotionAnalitics": {
+          "$ref": "#/definitions/JsonValue"
+        },
+        "metaRead": {
+          "type": "boolean"
+        },
+        "wsspResentStatus": {
+          "$ref": "#/definitions/JsonValue"
+        },
+        "openHtml": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "firstResendDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastResendDate": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "resendCount": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "isCheckedQuarentine": {
+          "type": "boolean"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "ip": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fields": {
+          "$ref": "#/definitions/AutomatedDeliveryFieldMapping"
+        },
+        "finishedCondition": {
+          "$ref": "#/definitions/AutomatedFinishedCondition"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AutomatedDeliveryFieldMapping": {
+      "type": "object",
+      "properties": {
+        "chargeType": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "sucursal": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "status": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "sendedDate": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "respondedDate": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "finished": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "csatProfiling": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "npsProfiling": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "profilings": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "error": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "country": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "sendType": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "wsspStatus": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "resent": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "textMining": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "fromDelivery": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "emotionAnalitics": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "metaRead": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "wsspResentStatus": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "openHtml": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "firstResendDate": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "lastResendDate": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "resendCount": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "isCheckedQuarentine": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "active": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        },
+        "ip": {
+          "$ref": "#/definitions/AutomatedFieldConfig"
+        }
+      },
+      "additionalProperties": false
+    },
+    "AutomatedFinishedCondition": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "const": "response"
+        },
+        "operator": {
+          "type": "string",
+          "const": "anyNotEmpty"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "source",
+        "operator"
+      ],
+      "additionalProperties": false
+    },
+    "AutomatedDeliveryGroupConfig": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "PAUSED",
+            "SENT",
+            "CANCELED",
+            "RESENT",
+            "PARTIALSENT"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "UpdateUsersConfig": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": false
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": true
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "active",
+            "values"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "QuarantineConfig": {
+      "type": "object",
+      "properties": {
+        "activate": {
+          "type": "boolean"
+        },
+        "days": {
+          "type": "number"
+        },
+        "duplicatedColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ignoreDuplicates": {
+          "type": "boolean"
+        },
+        "exception": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "AND",
+                "OR"
+              ]
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "updateTicket": {
+          "type": "object",
+          "properties": {
+            "activate": {
+              "type": "boolean"
+            },
+            "statusToUpdate": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "saveQuarantineDeliveries": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "surveysCross": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            },
+            "surveys": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuarantineCrossSurvey"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "QuarantineCrossSurvey": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "days": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "days"
+      ],
+      "additionalProperties": false
+    },
+    "GlobalTransformConfig": {
+      "type": "object",
+      "properties": {
+        "globalTransforms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TransformInstruction"
+          }
+        },
+        "excludeFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "LimitsConfig": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": true
+            },
+            "global": {
+              "type": "number"
+            },
+            "byField": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "limit": {
+                  "type": "number"
+                },
+                "value": {
+                  "$ref": "#/definitions/ConfigValue"
+                }
+              },
+              "required": [
+                "field",
+                "limit",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "active"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ChargeOrUpdateConfig": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": false
+            },
+            "days": {
+              "type": "number"
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": true
+            },
+            "days": {
+              "type": "number"
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "active",
+            "days",
+            "fields"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "FileProcessedOptions": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": true
+            },
+            "fileRename": {
+              "type": "string"
+            },
+            "deleteOriginalFile": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "active"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "DeleteRowsConfig": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": true
+            },
+            "conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "field": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "$ref": "#/definitions/ConfigValue"
+                  }
+                },
+                "required": [
+                  "field",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "active",
+            "conditions"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "DeleteDuplicatesByPrioritizationConfig": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "order": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            },
+            "orderBy": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "field": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "date",
+                      "number",
+                      "string"
+                    ]
+                  },
+                  "order": {
+                    "type": "string",
+                    "enum": [
+                      "ASC",
+                      "DESC"
+                    ]
+                  }
+                },
+                "required": [
+                  "field",
+                  "type"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "keysSelector": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "active": {
+              "type": "boolean",
+              "const": true
+            }
+          },
+          "required": [
+            "active",
+            "order",
+            "orderBy"
+          ]
+        }
+      ]
+    },
+    "ByMultipleFilterRowsConfig": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean"
+        },
+        "typeConditions": {
+          "type": "string",
+          "enum": [
+            "AND",
+            "OR"
+          ]
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MultipleFilterCondition"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "MultipleFilterCondition": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "byField",
+            "contains",
+            "phone"
+          ]
+        },
+        "field": {
+          "type": "string"
+        },
+        "valuesIn": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ConfigValue"
+          }
+        },
+        "valuesNotIn": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ConfigValue"
+          }
+        },
+        "value": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "PreTasksConfig": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": true
+            },
+            "tasks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "const": "stopDeliveriesAndTickets"
+                  }
+                },
+                "required": [
+                  "type"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "active",
+            "tasks"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "AddExtraFieldsConfig": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": true
+            },
+            "fields": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/definitions/JsonValue"
+              }
+            }
+          },
+          "required": [
+            "active",
+            "fields"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "x-config-attribute": "automated"
+}

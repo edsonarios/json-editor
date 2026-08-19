@@ -11,6 +11,11 @@ import Loader from './components/loader'
 import Footer from './components/footer'
 import { TabHeader } from './components/tabHeader'
 import { tablesAtributes } from './utils/clientTables'
+import {
+  BASE_CLIENT_CONFIG_MODEL_URI,
+  CLIENT_DATA_MODEL_URI,
+  configureJsonSchemas,
+} from './schemas/schemaRegistry'
 
 export default function App() {
   const [editorInstance, setEditorInstance] = useState<any>(null)
@@ -406,6 +411,11 @@ export default function App() {
               height="80vh"
               width="100%"
               language="json"
+              path={
+                selectTab === 0
+                  ? BASE_CLIENT_CONFIG_MODEL_URI
+                  : CLIENT_DATA_MODEL_URI
+              }
               theme="vs-dark"
               value={jsonData}
               onChange={(value) => {
@@ -418,6 +428,7 @@ export default function App() {
                 fontSize: 14,
                 lineNumbers: 'on',
               }}
+              beforeMount={configureJsonSchemas}
               onMount={(editor) => setEditorInstance(editor)}
             />
           </div>
