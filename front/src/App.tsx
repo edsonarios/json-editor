@@ -109,6 +109,19 @@ export default function App() {
   }, [jsonData, jsonFromDB])
 
   const saveJson = async () => {
+    if (isSaving) return
+    const currentJson = editorInstance?.getValue() ?? jsonData
+    let updateBody
+    try {
+      updateBody = JSON.stringify({
+        expected: JSON.parse(jsonFromDB),
+        next: JSON.parse(currentJson),
+      })
+    } catch {
+      toast.error('Invalid JSON')
+      return
+    }
+
     setIsSaving(true)
     console.log('selectTab', selectTab)
     let saved
@@ -118,7 +131,7 @@ export default function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: jsonData,
+        body: updateBody,
       })
     }
     if (selectTab === 1) {
@@ -129,7 +142,7 @@ export default function App() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: jsonData,
+          body: updateBody,
         },
       )
     }
@@ -146,7 +159,8 @@ export default function App() {
     }
     const data = await saved.json()
     if (saved.ok) {
-      setJsonFromDB(jsonData)
+      setJsonData(currentJson)
+      setJsonFromDB(currentJson)
       setIsSaveDisabled(true)
       toast.success(data.message, {
         style: {
@@ -400,7 +414,7 @@ export default function App() {
               <button
                 className={`px-5 bg-orange-600 rounded-md hover:bg-orange-500 ${isSaveDisabled ? 'cursor-not-allowed bg-zinc-500 hover:bg-zinc-400' : ''}`}
                 onClick={saveJson}
-                disabled={isSaveDisabled}
+                disabled={isSaveDisabled || isSaving}
               >
                 Save
               </button>

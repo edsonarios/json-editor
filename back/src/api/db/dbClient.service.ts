@@ -3,7 +3,7 @@ import { VercelLogger } from 'src/common/nestConfig/logger'
 import { createClientDataSource } from './db.config'
 import { Dashboards } from './entities/clients/Dashboards.entity'
 import { Suites } from './entities/clients/Suites.entity'
-import { BadRequestException } from '@nestjs/common'
+import { BadRequestException, ConflictException } from '@nestjs/common'
 
 export class DBClientService {
   private readonly logger = new VercelLogger(DBClientService.name)
@@ -44,20 +44,43 @@ export class DBClientService {
     id: string,
     table: string,
     attribute: string,
-    config: object,
+    expectedConfig: object | null,
+    nextConfig: object | null,
   ) {
     this.logger.log('saveDatas', id)
-    const updateData = { [attribute]: config }
-    let data
+    const updateData = { [attribute]: nextConfig }
+    const expected =
+      expectedConfig === null ? null : JSON.stringify(expectedConfig)
+    let repository: Repository<Dashboards> | Repository<Suites>
+
     if (table === 'dashboards') {
-      data = await this.dashboardsRepository.update({ id }, updateData)
-    }
-    if (table === 'suites') {
-      data = await this.suitesRepository.update({ id }, updateData)
+      repository = this.dashboardsRepository
+    } else if (table === 'suites') {
+      repository = this.suitesRepository
+    } else {
+      throw new BadRequestException('Unsupported table')
     }
 
+    const column = repository.metadata.findColumnWithPropertyName(attribute)
+    if (!column || column.type !== 'jsonb') {
+      throw new BadRequestException('Unsupported attribute')
+    }
+
+    const data = await repository
+      .createQueryBuilder()
+      .update()
+      .set(updateData)
+      .where('id = :id', { id })
+      .andWhere(
+        `"${column.databaseName}" IS NOT DISTINCT FROM CAST(:expected AS jsonb)`,
+        { expected },
+      )
+      .execute()
+
     if (data.affected === 0) {
-      throw new BadRequestException('Error saving config')
+      throw new ConflictException(
+        'La configuración cambió desde que la cargaste. Recárgala antes de volver a guardar.',
+      )
     }
     return { message: 'Saved' }
   }

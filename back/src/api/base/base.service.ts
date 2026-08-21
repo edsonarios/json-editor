@@ -48,16 +48,25 @@ export class BaseService {
     return config
   }
 
-  async update(dbEnv: string, id: string, config: object) {
+  async update(
+    dbEnv: string,
+    id: string,
+    expectedConfig: object | null,
+    nextConfig: object | null,
+  ) {
     this.logger.log('update', dbEnv, id)
     this.dbService = new DBBaseService(dbEnv)
     await this.dbService.init()
 
-    const data = await this.dbService.saveClientConfig(id, config)
+    const data = await this.dbService.saveClientConfig(
+      id,
+      expectedConfig,
+      nextConfig,
+    )
     await this.dbService.destroy()
 
-    if (config) {
-      await this.saveConfigBackup(id, dbEnv, config, 'update')
+    if (nextConfig) {
+      await this.saveConfigBackup(id, dbEnv, nextConfig, 'update')
     }
 
     return data

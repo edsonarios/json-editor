@@ -27,7 +27,8 @@ export class ClientService {
     table: string,
     attribute: string,
     id: string,
-    config: object,
+    expectedConfig: object | null,
+    nextConfig: object | null,
   ) {
     this.logger.log('updateDatas', dbEnv, id)
     this.dbClientService = new DBClientService(dbEnv, clientId)
@@ -37,7 +38,8 @@ export class ClientService {
       id,
       table,
       attribute,
-      config,
+      expectedConfig,
+      nextConfig,
     )
     await this.dbClientService.destroy()
     return response

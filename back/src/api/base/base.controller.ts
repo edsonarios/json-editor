@@ -28,6 +28,11 @@ export class BaseController {
     @Body() updateBaseDto: UpdateBaseDto,
   ) {
     this.logger.log('update', dbEnv, id)
-    return this.baseService.update(dbEnv, id, updateBaseDto)
+    return this.baseService.update(
+      dbEnv,
+      id,
+      updateBaseDto.expected,
+      updateBaseDto.next,
+    )
   }
 }

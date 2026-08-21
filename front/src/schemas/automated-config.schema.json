@@ -30,6 +30,9 @@
     "AutomatedFileConfig": {
       "type": "object",
       "properties": {
+        "configId": {
+          "type": "string"
+        },
         "activate": {
           "type": "boolean"
         },
@@ -437,8 +440,26 @@
             },
             "type": {
               "type": "string",
+              "const": "required"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allowEmpty": {
+              "type": "boolean"
+            },
+            "messageError": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
               "enum": [
-                "required",
                 "email",
                 "number",
                 "boolean"
@@ -453,6 +474,9 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "allowEmpty": {
+              "type": "boolean"
+            },
             "messageError": {
               "type": "string"
             },
@@ -476,6 +500,9 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "allowEmpty": {
+              "type": "boolean"
+            },
             "messageError": {
               "type": "string"
             },
@@ -495,6 +522,9 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "allowEmpty": {
+              "type": "boolean"
+            },
             "messageError": {
               "type": "string"
             },
@@ -518,6 +548,9 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "allowEmpty": {
+              "type": "boolean"
+            },
             "messageError": {
               "type": "string"
             },
@@ -538,6 +571,9 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "allowEmpty": {
+              "type": "boolean"
+            },
             "messageError": {
               "type": "string"
             },
@@ -568,6 +604,9 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "allowEmpty": {
+              "type": "boolean"
+            },
             "messageError": {
               "type": "string"
             },

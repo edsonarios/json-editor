@@ -35,7 +35,8 @@ export class ClientController {
       table,
       attribute,
       id,
-      updateBaseDto,
+      updateBaseDto.expected,
+      updateBaseDto.next,
     )
   }
 }
