@@ -2,6 +2,27 @@
 
 ![](/front/public/app.webp)
 
+## Ejecutar todo desde la raíz
+
+Instala las dependencias una sola vez:
+
+```bash
+npm install
+npm run install:all
+```
+
+Después, inicia el backend y el frontend con hot reload desde una sola consola:
+
+```bash
+npm run dev
+```
+
+`Ctrl+C` detiene ambos procesos. Para compilar ambos proyectos:
+
+```bash
+npm run build
+```
+
 ## Back
 
 ```bash

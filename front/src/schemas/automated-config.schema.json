@@ -75,10 +75,22 @@
         "quarantineConfig": {
           "$ref": "#/definitions/QuarantineConfig"
         },
+        "quarantineByField": {
+          "$ref": "#/definitions/QuarantineByFieldConfig"
+        },
         "globalTransformConfig": {
           "$ref": "#/definitions/GlobalTransformConfig"
         },
         "createTickets": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "updateDynamicFilters": {
           "type": "object",
           "properties": {
             "active": {
@@ -1048,6 +1060,60 @@
         "days"
       ],
       "additionalProperties": false
+    },
+    "QuarantineByFieldConfig": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": false
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "dateField": {
+              "type": "string"
+            },
+            "days": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "const": true
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "dateField": {
+              "type": "string"
+            },
+            "days": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "active",
+            "fields",
+            "dateField",
+            "days"
+          ],
+          "additionalProperties": false
+        }
+      ]
     },
     "GlobalTransformConfig": {
       "type": "object",

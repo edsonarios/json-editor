@@ -1,0 +1,13 @@
+{
+  "name": "json-editor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others-on-fail --names BACK,FRONT --prefix-colors blue,magenta \"npm --prefix back run dev\" \"pnpm --dir front dev\"",
+    "build": "npm --prefix back run build && pnpm --dir front build",
+    "install:all": "npm --prefix back ci && pnpm --dir front install --frozen-lockfile"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.5"
+  }
+}
