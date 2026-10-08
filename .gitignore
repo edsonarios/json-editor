@@ -1,4 +1,5 @@
 .DS_Store
+node_modules/
 
 # Logs
 logs
@@ -13,6 +14,12 @@ node_modules
 dist
 dist-ssr
 *.local
+
+# Build output
+back/dist/
+front/dist/
+# Front compilado servido por el back en producción
+back/client/
 
 # Editor directories and files
 .vscode/*

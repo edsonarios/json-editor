@@ -159,6 +159,9 @@
         "addExtraFields": {
           "$ref": "#/definitions/AddExtraFieldsConfig"
         },
+        "apiUpload": {
+          "$ref": "#/definitions/ApiUploadConfig"
+        },
         "specificSendType": {
           "type": "string",
           "enum": [
@@ -388,6 +391,7 @@
       "enum": [
         "phone",
         "number",
+        "numberOrNull",
         "lowercase",
         "uppercase",
         "capitalize",
@@ -1079,6 +1083,9 @@
             "dateField": {
               "type": "string"
             },
+            "dateFieldSource": {
+              "$ref": "#/definitions/QuarantineByFieldDateSource"
+            },
             "days": {
               "type": "number"
             }
@@ -1101,6 +1108,9 @@
             "dateField": {
               "type": "string"
             },
+            "dateFieldSource": {
+              "$ref": "#/definitions/QuarantineByFieldDateSource"
+            },
             "days": {
               "type": "number"
             }
@@ -1114,6 +1124,14 @@
           "additionalProperties": false
         }
       ]
+    },
+    "QuarantineByFieldDateSource": {
+      "type": "string",
+      "enum": [
+        "aditionalInfo",
+        "column"
+      ],
+      "description": "Origen de la fecha previa del delivery en `quarantineByField`:\n- `aditionalInfo` (default): la fecha sale de `aditional_info[dateField]` y la   fecha entrante es `row[dateField]` de la base (comportamiento original).\n- `column`: la fecha previa sale de una columna del delivery (ver   `QuarantineByFieldDateColumn`) y la fecha entrante es la fecha actual (now)."
     },
     "GlobalTransformConfig": {
       "type": "object",
@@ -1517,6 +1535,25 @@
           "additionalProperties": false
         }
       ]
+    },
+    "ApiUploadConfig": {
+      "type": "object",
+      "properties": {
+        "active": {
+          "type": "boolean",
+          "description": "Habilita la carga por API para esta config."
+        },
+        "maxRecords": {
+          "type": "number",
+          "description": "Máximo de registros por request. Default 50. Limitado por el gateway; se ajusta por cliente según el límite real que acepte."
+        },
+        "inactivityWindowMinutes": {
+          "type": "number",
+          "description": "Ventana de inactividad (minutos) tras el último lote para cerrar el job y disparar el informe. Default 1 (watchdog, Fase 3)."
+        }
+      },
+      "additionalProperties": false,
+      "description": "Configuración del canal de carga por API (`POST /automated-uploads`). Ver docs/features/21-api-uploads."
     }
   },
   "x-config-attribute": "automated"

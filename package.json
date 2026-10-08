@@ -1,13 +1,17 @@
 {
   "name": "json-editor",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
+  "description": "Editor de JSON: back (NestJS) + front (React + Vite) orquestados desde la raíz",
   "scripts": {
-    "dev": "concurrently --kill-others-on-fail --names BACK,FRONT --prefix-colors blue,magenta \"npm --prefix back run dev\" \"pnpm --dir front dev\"",
-    "build": "npm --prefix back run build && pnpm --dir front build",
-    "install:all": "npm --prefix back ci && pnpm --dir front install --frozen-lockfile"
+    "install:all": "npm install && npm --prefix back install && npm --prefix front install",
+    "dev": "concurrently -n back,front -c blue,green \"npm --prefix back run dev\" \"npm --prefix front run dev\"",
+    "build": "npm --prefix front run build && npm --prefix back run build && shx rm -rf back/client && shx mkdir -p back/client && shx cp -r front/dist/* back/client/",
+    "start": "npm --prefix back run start:prod",
+    "start:prod": "npm --prefix back run start:prod"
   },
   "devDependencies": {
-    "concurrently": "10.0.5"
+    "concurrently": "^9.1.2",
+    "shx": "^0.4.0"
   }
 }
