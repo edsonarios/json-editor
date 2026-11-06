@@ -61,7 +61,7 @@ export function Select({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between bg-zinc-700 hover:bg-zinc-600"
+          className="config-select justify-between hover:bg-zinc-600"
         >
           {value
             ? options.find((option) => option.value === value)?.label

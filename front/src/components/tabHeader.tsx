@@ -11,8 +11,7 @@ export function TabHeader({
 }) {
   return (
     <button
-      className={`headerButton
-      ${selectTab === currentTab ? 'bg-white' : 'text-blue-100 hover:bg-white/[0.12] hover:text-white border-2 border-zinc-700'}`}
+      className={`headerButton ${selectTab === currentTab ? 'is-active' : ''}`}
       onClick={() => {
         setSelectTab(selectTab)
       }}

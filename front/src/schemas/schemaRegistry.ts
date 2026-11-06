@@ -4,6 +4,12 @@ export const BASE_CLIENT_CONFIG_MODEL_URI =
   'inmemory://model/base-client-config.json'
 export const CLIENT_DATA_MODEL_URI = 'inmemory://model/client-table-data.json'
 
+export const getBaseClientConfigModelUri = (workspaceId: string) =>
+  `inmemory://model/base-client-config-${workspaceId}.json`
+
+export const getClientDataModelUri = (workspaceId: string) =>
+  `inmemory://model/client-table-data-${workspaceId}.json`
+
 type JsonSchema = Record<string, unknown> & {
   'x-config-attribute'?: string
 }
@@ -75,7 +81,10 @@ export function configureJsonSchemas(monaco: Monaco): void {
       ...registeredSchemas.map(({ uri, schema }) => ({ uri, schema })),
       {
         uri: 'inmemory://schemas/base-client-config.schema.json',
-        fileMatch: [BASE_CLIENT_CONFIG_MODEL_URI],
+        fileMatch: [
+          BASE_CLIENT_CONFIG_MODEL_URI,
+          'inmemory://model/base-client-config-*.json',
+        ],
         schema: {
           type: 'object',
           properties,

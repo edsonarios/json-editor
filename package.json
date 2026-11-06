@@ -6,7 +6,8 @@
   "scripts": {
     "install:all": "npm install && npm --prefix back install && npm --prefix front install",
     "dev": "concurrently -n back,front -c blue,green \"npm --prefix back run dev\" \"npm --prefix front run dev\"",
-    "build": "npm --prefix front run build && npm --prefix back run build && shx rm -rf back/client && shx mkdir -p back/client && shx cp -r front/dist/* back/client/",
+    "build:front": "npm --prefix front run build && shx rm -rf back/client && shx mkdir -p back/client && shx cp -r front/dist/* back/client/",
+    "build": "npm run build:front && npm --prefix back run build",
     "start": "npm --prefix back run start:prod",
     "start:prod": "npm --prefix back run start:prod"
   },

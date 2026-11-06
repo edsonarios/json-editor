@@ -4,6 +4,7 @@ import { ServeStaticModule } from '@nestjs/serve-static'
 import { BaseModule } from './api/base/base.module'
 import { ConfigModule } from '@nestjs/config'
 import { ClientModule } from './api/clients/client.module'
+import { SchemaModule } from './api/schemas/schema.module'
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ClientModule } from './api/clients/client.module'
     }),
     BaseModule,
     ClientModule,
+    SchemaModule,
   ],
   controllers: [],
   providers: [],
